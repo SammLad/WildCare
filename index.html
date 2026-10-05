@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WildCare · Dashboard Total e Interactivo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar-wildcare">
+        <div class="container-fluid d-flex align-items-center justify-content-between px-4">
+            <div class="logo-area d-flex align-items-center gap-2">
+                <div class="logo-flower"></div>
+                <span class="display-font brand-title">WildCare</span>
+            </div>
+
+            <div class="search-pill-proto">
+                <button class="search-icon-btn"><i class="bi bi-search"></i></button>
+                <input type="text" placeholder="Search" id="global-search" oninput="filtrarTodoElSistema()">
+            </div>
+
+            <nav class="nav-links-proto d-flex gap-4 align-items-center d-none d-md-flex">
+                <a href="#" class="active">Inicio</a>
+                <a href="#sec-tacticas">Tácticas</a>
+                <a href="#sec-adopcion">Adopciones</a>
+                <a href="#sec-donar">Donaciones</a>
+                <a href="#sec-blog">Blog del Cuidador</a>
+            </nav>
+
+            <div class="account-proto d-flex align-items-center gap-2">
+                <select id="role-selector"
+                    class="form-select form-select-sm border-0 bg-white shadow-sm font-weight-bold"
+                    onchange="cambiarRolSimulado(this.value)">
+                    <option value="usuario">Rol: Público / Invitado</option>
+                    <option value="rescatista">Rol: Rescatista Activo</option>
+                    <option value="refugio">Rol: Refugio / Veterinario</option>
+                    <option value="admin" selected>Rol: Administrador General</option>
+                </select>
+                <div class="avatar-proto"><i class="bi bi-person-fill"></i></div>
+            </div>
+        </div>
+    </header>
+
+    <div id="loader-indicator" class="text-center py-2 bg-warning text-dark fw-bold small d-none">
+        <span class="spinner-border spinner-border-sm me-2"></span> Sincronizando datos en tiempo real de la red
+        WildCare...
+    </div>
+
+    <main class="container py-4">
+
+        <div class="row align-items-center g-5 mt-2">
+            <div class="col-lg-5">
+                <div class="card-wc-proto">
+                    <h1 class="display-font main-card-title">Bienvenidos</h1>
+                    <p class="eyebrow-proto">¿Quiénes somos?</p>
+                    <p class="body-text-proto mb-4">¡Hola! Somos WildCare, una empresa que ayuda a todos los animales a
+                        vivir de manera óptima y segura 🧸.</p>
+                    <p class="eyebrow-proto">¿Qué hacemos?</p>
+                    <p class="body-text-proto mb-4">Nuestros equipos de rescatistas nos ayudan a que los animales puedan
+                        volver sanos y salvos a sus hábitats naturales, les aportamos hogar y una cálida familia.</p>
+                    <p class="eyebrow-proto">¿Tienes dudas?</p>
+                    <p class="body-text-proto mb-4">Contáctanos por vía Gmail o WhatsApp en caso de dudas.</p>
+                    <div class="text-center">
+                        <a href="#sec-contacto" class="btn-wc-proto">¡Contáctanos!</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7 text-center position-relative hero-branding-area">
+                <div class="branding-words">
+                    <h2 class="display-font text-wild">Wild</h2>
+                    <h2 class="display-font text-care">Care</h2>
+                </div>
+                <img src="https://plus.unsplash.com/premium_vector-1724419775589-a443c2004f9d?q=80&w=500&auto=format&fit=crop"
+                    alt="Mascota WildCare" class="hero-mascota-proto">
+                <div class="ia-pill-proto">
+                    <i class="bi bi-chat-heart-fill text-warning fs-5"></i>
+                    <input type="text" placeholder="Pregúntale a Wild IA cómo ayudar..." class="flex-grow-1"
+                        id="ia-input" onkeydown="if(event.key === 'Enter') consultarWildIA()">
+                    <div class="ia-avatar-mini">🦌</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel-notificaciones-live" class="mt-5 p-3 bg-light border rounded-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 text-danger fw-bold"><i class="bi bi-bell-fill me-2 animate-bounce"></i> Canales de
+                    Alerta de Rescate Activos</h5>
+                <span class="badge bg-dark rounded-pill" id="count-notif">1</span>
+            </div>
+            <div id="list-notif-box" class="small text-muted mt-2"></div>
+        </div>
+
+        <section class="section-gap card-white">
+            <h3 class="display-font text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Reportar Animal en
+                Peligro</h3>
+            <p class="text-muted">Genera una alerta inmediata con coordenadas y fotografías para el bloque de
+                rescatistas asignados.</p>
+            <form id="form-reportar-animal" onsubmit="procesarReporte(event)">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Especie / Tipo de Animal</label>
+                        <input type="text" id="rep-especie" class="form-select-style form-control"
+                            placeholder="Ej: Canino, Ave, Gato, Conejo" required>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Ubicación / Dirección Exacta</label>
+                        <input type="text" id="rep-ubicacion" class="form-control"
+                            placeholder="Ej: Calle 142 con Carrera 19" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Descripción detallada de la emergencia</label>
+                        <textarea id="rep-desc" class="form-control" rows="2"
+                            placeholder="Describa el estado del animal..." required></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Adjuntar Evidencia Fotográfica</label>
+                        <input type="file" id="rep-foto" class="form-control" accept="image/*">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-danger w-100 fw-bold py-2 rounded-pill"><i
+                                class="bi bi-telegram"></i> Despachar Alerta de Auxilio</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section id="panel-rescatista-mapa" class="section-gap card-white border-warning border d-none">
+            <h3 class="display-font text-warning"><i class="bi bi-geo-alt-fill"></i> Módulo de Navegación del Rescatista
+            </h3>
+            <p class="text-muted">Consulte los reportes pendientes de la comunidad, clasifíquelos y abra la ruta
+                asistida en el mapa de navegación.</p>
+            <div id="rescatista-cards-container" class="row g-3"></div>
+        </section>
+
+        <section id="panel-refugio-medico" class="section-gap card-white border-primary border d-none">
+            <h3 class="display-font text-dark"><i class="bi bi-heart-pulse-fill text-danger"></i> Gestión del Refugio &
+                Seguimiento Clínico</h3>
+            <p class="text-muted">Asigne diagnósticos médicos, cambie estados relacionales e incorpore requisitos y
+                nuevas jornadas asistenciales.</p>
+            <div class="row g-4">
+                <div class="col-md-7">
+                    <h5>Animales en Cuarentena / Tratamiento</h5>
+                    <div id="refugio-list-medica" class="row g-2"></div>
+                </div>
+                <div class="col-md-5 bg-light p-3 rounded-4">
+                    <h5>Publicar Requisitos o Jornadas</h5>
+                    <form onsubmit="agregarJornada(event)" class="small">
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Título de la Jornada</label>
+                            <input type="text" id="jor-titulo" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Lugar</label>
+                            <input type="text" id="jor-lugar" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label fw-bold">Descripción / Requisitos Básicos</label>
+                            <textarea id="jor-desc" class="form-control form-control-sm" rows="2" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-dark w-100 rounded-pill">Publicar
+                            Convocatoria</button>
+                    </form>
+                </div>
+            </div>
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 bg-light">
+                        <h6 class="fw-bold text-cafe">Solicitudes de Adopción</h6>
+                        <div id="refugio-solicitudes-adopcion" class="small"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 bg-light">
+                        <h6 class="fw-bold text-cafe">Solicitudes de Voluntariado</h6>
+                        <div id="refugio-solicitudes-voluntariado" class="small"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4 mt-3">
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 bg-light">
+                        <h6 class="fw-bold text-cafe">Requisitos de Adopción</h6>
+                        <div id="refugio-requisitos-adopcion" class="small"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded-4 p-3 bg-light">
+                        <h6 class="fw-bold text-cafe">Registro de Donaciones</h6>
+                        <div id="refugio-registro-donaciones" class="small"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-gap">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="display-font mb-0 text-cafe">Monitoreo de Casos Activos</h3>
+                <button class="btn btn-sm btn-outline-dark rounded-pill px-3" onclick="mostrarSeccionPublicarBlog()">Ver
+                    Todos & Crear Publicación</button>
+            </div>
+            <div id="home-reportes" class="row g-3"></div>
+        </section>
+
+        <section id="sec-tacticas" class="section-gap card-white">
+            <h3 class="display-font text-success"><i class="bi bi-shield-shaded"></i> Tácticas de Auxilio Inmediato</h3>
+            <p class="text-muted">Consulta las guías y clasificaciones de emergencia sin restricciones de autenticación.
+            </p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded-4 bg-light">
+                        <span class="badge bg-danger mb-2">Emergencia Nivel: Crítico</span>
+                        <h6 class="fw-bold text-cafe">Mamíferos / Caninos y Felinos</h6>
+                        <p class="small text-muted">Ante hemorragias activas, presione firmemente con un paño limpio.
+                            Nunca aplique torniquetes en zonas articulares sin supervisión.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded-4 bg-light">
+                        <span class="badge bg-warning text-dark mb-2">Emergencia Nivel: Moderado</span>
+                        <h6 class="fw-bold text-cafe">Aves / Fauna de Vuelo</h6>
+                        <p class="small text-muted">Aislar de ruidos estridentes, depositar en cajas de cartón
+                            perforadas. Evitar suministrar agua a la fuerza para prevenir asfixia.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-3 border rounded-4 bg-light">
+                        <span class="badge bg-info mb-2">Emergencia Nivel: Preventivo</span>
+                        <h6 class="fw-bold text-cafe">Reptiles / Silvestres</h6>
+                        <p class="small text-muted">Mantenga distancia prudente. No intente capturarlos con las manos
+                            desnudas; use un contenedor profundo y espere al rescatista.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-adopcion" class="section-gap">
+            <h3 class="display-font text-cafe text-center mb-4"><i class="bi bi-house-heart"></i> Módulo de Adopciones y
+                Jornadas Activas</h3>
+
+            <div class="bg-white p-3 rounded-4 shadow-sm mb-4">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-4">
+                        <input type="text" id="filtro-especie" class="form-control"
+                            placeholder="Filtrar por especie (Ej: Canino)" oninput="renderAdopcionesYJornadas()">
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="filtro-ubicacion" class="form-control"
+                            placeholder="Filtrar por ubicación" oninput="renderAdopcionesYJornadas()">
+                    </div>
+                    <div class="col-md-4 text-center fw-bold text-muted small">
+                        Filtrado dinámico activo e inmediato.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <h5 class="fw-bold text-muted mb-3">Jornadas Vigentes del Mes</h5>
+                    <div id="jornadas-container" class="d-flex flex-column gap-2"></div>
+                </div>
+                <div class="col-lg-6">
+                    <h5 class="fw-bold text-muted mb-3">Animales Listos para un Hogar</h5>
+                    <div id="adopciones-container" class="row g-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-donar" class="section-gap card-white bg-light border border-2">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3 class="display-font text-success"><i class="bi bi-wallet2"></i> Donaciones de Respaldo Colectivo
+                    </h3>
+                    <p class="text-muted">Selecciona o digita el monto que deseas transferir para la compra de insumos
+                        clínicos y alimentos especializados.</p>
+                    <div class="d-flex gap-2 mb-3">
+                        <button class="btn btn-outline-success fw-bold px-3 rounded-pill"
+                            onclick="establecerMontoDonacion(10)">$10 USD</button>
+                        <button class="btn btn-outline-success fw-bold px-3 rounded-pill"
+                            onclick="establecerMontoDonacion(25)">$25 USD</button>
+                        <button class="btn btn-outline-success fw-bold px-3 rounded-pill"
+                            onclick="establecerMontoDonacion(50)">$50 USD</button>
+                        <input type="number" id="monto-libre" class="form-control w-25 rounded-pill text-center"
+                            placeholder="Otro">
+                    </div>
+                    <button class="btn btn-success fw-bold w-100 py-2 rounded-pill shadow"
+                        onclick="ejecutarDonacion()"><i class="bi bi-credit-card-2-front"></i> Procesar Donación
+                        Segura</button>
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <div id="ticket-donacion" class="p-3 bg-white border border-dashed rounded-4 d-none">
+                        <div class="text-center">
+                            <i class="bi bi-patch-check-fill text-success fs-3"></i>
+                            <h6 class="fw-bold text-uppercase mt-1 mb-0">WildCare Transaction Receipt</h6>
+                            <small class="text-muted">Comprobante Oficial de Aportes</small>
+                        </div>
+                        <hr>
+                        <div class="small d-flex flex-column gap-1">
+                            <div><strong>ID Recibo:</strong> <span id="t-id"></span></div>
+                            <div><strong>Fecha de Operación:</strong> <span id="t-fecha"></span></div>
+                            <div><strong>Destino:</strong> Fondo Común de Refugios Autorizados</div>
+                            <div class="fs-5 text-success mt-2 text-center"><strong>Monto:</strong> $<span
+                                    id="t-monto"></span> USD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-blog" class="section-gap">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="display-font text-cafe mb-0"><i class="bi bi-journal-richtext"></i> Blog y Bitácora de
+                    Rescates</h3>
+                <button class="btn btn-primary btn-sm rounded-pill px-3" onclick="mostrarSeccionPublicarBlog()"><i
+                        class="bi bi-plus-circle"></i> Escribir en el Blog</button>
+            </div>
+
+            <div id="box-crear-blog" class="card-white border-primary border mb-4 d-none">
+                <h5>Crear Nueva Publicación para el Blog</h5>
+                <form onsubmit="guardarPublicacionBlog(event)">
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <input type="text" id="blog-titulo" class="form-control form-control-sm"
+                                placeholder="Título del Artículo / Consejo" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="file" id="blog-foto" class="form-control form-control-sm">
+                        </div>
+                        <div class="col-12">
+                            <textarea id="blog-contenido" class="form-control form-control-sm" rows="3"
+                                placeholder="Escriba aquí los consejos o la historia detallada del rescate..."
+                                required></textarea>
+                        </div>
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-sm btn-secondary rounded-pill me-1"
+                                onclick="mostrarSeccionPublicarBlog()">Cancelar</button>
+                            <button type="submit" class="btn btn-sm btn-primary rounded-pill">Enviar para Aprobación del
+                                Administrador</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div id="blog-cards-container" class="row g-3"></div>
+        </section>
+
+        <section id="panel-admin-moderacion" class="section-gap card-white border-danger border d-none">
+            <h3 class="display-font text-danger"><i class="bi bi-shield-lock-fill"></i> Panel de Control del
+                Administrador</h3>
+            <p class="text-muted">Aprobar publicaciones pendientes del blog, auditar donaciones globales y gestionar la
+                seguridad de las cuentas asociadas.</p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Publicaciones por Aprobar</h6>
+                    <div id="admin-blog-pendientes" class="d-flex flex-column gap-2 small"></div>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold">Control de Cuentas / Entidades Autenticadas</h6>
+                    <div id="admin-entidades-list" class="list-group list-group-flush small"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sec-contacto" class="section-gap card-white">
+            <h3 class="display-font text-cafe"><i class="bi bi-telephone-outbound-fill text-warning"></i> Directorio
+                Clínico de Especialistas</h3>
+            <p class="text-muted">Envía una solicitud de consulta rápida a los profesionales de la red veterinaria
+                autorizada.</p>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div id="specialists-container" class="d-flex flex-column gap-2"></div>
+                </div>
+                <div class="col-md-6 bg-light p-3 rounded-4">
+                    <h6>Formulario de Solicitud Expresa</h6>
+                    <form onsubmit="enviarSolicitudContacto(event)" class="small">
+                        <div class="mb-2">
+                            <label class="form-label mb-0">Seleccione el Especialista</label>
+                            <select id="sol-esp" class="form-select form-select-sm"></select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label mb-0">Tu Correo Electrónico</label>
+                            <input type="email" id="sol-email" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label mb-0">Motivo de la urgencia médica</label>
+                            <textarea id="sol-motivo" class="form-control form-control-sm" rows="2" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-warning w-100 fw-bold rounded-pill">Despachar
+                            Solicitud Directa</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-gap card-white border-info border">
+            <h3 class="display-font text-info"><i class="bi bi-person-plus-fill"></i> Inscripción de Voluntarios y
+                Registro de Cuentas</h3>
+            <form onsubmit="procesarRegistroVoluntario(event)" class="small">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <input type="text" id="reg-nombre" class="form-control form-control-sm"
+                            placeholder="Nombre Completo" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="email" id="reg-correo" class="form-control form-control-sm"
+                            placeholder="Correo Electrónico Válido" required>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="reg-refugio" class="form-select form-select-sm">
+                            <option value="Refugio Central WildCare">Asignar a: Refugio Central WildCare</option>
+                            <option value="Santuario de Aves Libres">Asignar a: Santuario de Aves Libres</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-sm btn-info text-white fw-bold px-4 rounded-pill">Enviar
+                            Solicitud e Inscribirme</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+    </main>
+
+    <div class="modal fade" id="modalAdopcion" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <form onsubmit="guardarFormularioAdopcion(event)" class="modal-content rounded-4">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Formulario de Adopción Responsable</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body small">
+                    <input type="hidden" id="adop-animal-id">
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Nombre del Postulante</label>
+                        <input type="text" id="adop-nombre" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">Teléfono de Contacto</label>
+                        <input type="text" id="adop-tel" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label fw-bold">¿Cuenta con espacio adecuado y patio cerrado?</label>
+                        <select id="adop-espacio" class="form-select form-select-sm">
+                            <option value="si">Sí, totalmente apto</option>
+                            <option value="no">No, apartamento pequeño</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-sm btn-success rounded-pill">Enviar Formulario al
+                        Refugio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="text-center py-4 mt-5 bg-dark text-white-50 small">
+        <p class="mb-0">© 2026 WildCare Corporation. Interfaz adaptativa optimizada y construida bajo criterios AAA.</p>
+    </footer>
+
+    <script src="storage.js"></script>
+    <script src="ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let montoSeleccionado = 0;
+
+        function formatearFechaHora(fechaIso) {
+            if (!fechaIso) return 'Sin registro';
+            const fecha = new Date(fechaIso);
+            if (Number.isNaN(fecha.getTime())) return 'Sin registro';
+            return fecha.toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function registrarActualizacion(reporte, detalle) {
+            if (!reporte) return;
+            if (!Array.isArray(reporte.actualizaciones)) {
+                reporte.actualizaciones = [];
+            }
+            reporte.actualizaciones.unshift({
+                fecha: new Date().toISOString(),
+                detalle: detalle
+            });
+        }
+
+        function cambiarRolSimulado(rol) {
+            document.getElementById('loader-indicator').classList.remove('d-none');
+            setTimeout(() => {
+                document.getElementById('loader-indicator').classList.add('d-none');
+
+                // Ocultar todos los paneles condicionales primero
+                document.getElementById('panel-rescatista-mapa').classList.add('d-none');
+                document.getElementById('panel-refugio-medico').classList.add('d-none');
+                document.getElementById('panel-admin-moderacion').classList.add('d-none');
+
+                if (rol === 'rescatista') {
+                    document.getElementById('panel-rescatista-mapa').classList.remove('d-none');
+                } else if (rol === 'refugio') {
+                    document.getElementById('panel-refugio-medico').classList.remove('d-none');
+                } else if (rol === 'admin') {
+                    document.getElementById('panel-rescatista-mapa').classList.remove('d-none');
+                    document.getElementById('panel-refugio-medico').classList.remove('d-none');
+                    document.getElementById('panel-admin-moderacion').classList.remove('d-none');
+                }
+                wcToast(`Rol cambiado a: ${rol.toUpperCase()}. Vistas dinámicas actualizadas.`);
+                renderTodo();
+            }, 400);
+        }
+
+        function procesarReporte(e) {
+            e.preventDefault();
+            const especie = document.getElementById('rep-especie').value;
+            const ubicacion = document.getElementById('rep-ubicacion').value;
+            const desc = document.getElementById('rep-desc').value;
+            const fotoInput = document.getElementById('rep-foto').files[0];
+
+            wcFileToBase64(fotoInput, function (base64Img) {
+                const reportes = wcGetReports();
+                const nuevoId = 'REP_' + Math.floor(1000 + Math.random() * 9000);
+                const nuevoReporte = {
+                    id: nuevoId,
+                    tipoAnimal: especie,
+                    clasificacion: 'Pendiente',
+                    descripcion: desc,
+                    ubicacion: ubicacion,
+                    coordenadas: `https://maps.google.com/?q=${ubicacion}`,
+                    estado: 'reportado',
+                    foto: base64Img,
+                    fecha: new Date().toISOString(),
+                    comentarios: [],
+                    historialMedico: []
+                };
+                reportes.unshift(nuevoReporte);
+                wcSaveReports(reportes);
+
+                // Agregar a notificaciones
+                const notifs = wcGetNotifications();
+                notifs.unshift({ id: wcUid('not'), mensaje: `¡Alerta! Nuevo reporte de ${especie} en ${ubicacion}`, fecha: new Date().toISOString(), ubicacion: ubicacion });
+                wcSet(WC_KEYS.NOTIFICATIONS, notifs);
+
+                wcToast(`Reporte enviado con éxito. Radicado Número: ${nuevoId}`);
+                document.getElementById('form-reportar-animal').reset();
+                renderTodo();
+            });
+        }
+
+        function aceptarCasoRescatista(id) {
+            const reportes = wcGetReports();
+            const r = reportes.find(item => item.id === id);
+            if (r) {
+                r.estado = 'en-camino';
+                registrarActualizacion(r, "Estado actualizado a En Camino");
+                wcSaveReports(reportes);
+                wcToast(`Has aceptado el caso ${id}. Estado cambiado a 'En Camino'`);
+                renderTodo();
+            }
+        }
+
+        function cambiarClasificacionRescatista(id, valor) {
+            const reportes = wcGetReports();
+            const r = reportes.find(item => item.id === id);
+            if (r) {
+                r.clasificacion = valor;
+                registrarActualizacion(r, `Clasificación actualizada a ${valor}`);
+                wcSaveReports(reportes);
+                wcToast(`Clasificación guardada como: ${valor}`);
+                renderTodo();
+            }
+        }
+
+        function registrarComentarioYEstado(id, index) {
+            const txt = document.getElementById(`obs-${index}`).value;
+            const est = document.getElementById(`est-${index}`).value;
+            const reportes = wcGetReports();
+            const r = reportes.find(item => item.id === id);
+            if (r) {
+                if (txt) r.comentarios.push(txt);
+                r.estado = est;
+                const detalle = txt
+                    ? `Estado actualizado a ${est} · Comentario: ${txt}`
+                    : `Estado actualizado a ${est}`;
+                registrarActualizacion(r, detalle);
+                wcSaveReports(reportes);
+                wcToast(`Caso ${id} actualizado correctamente.`);
+                renderTodo();
+            }
+        }
+
+        function agregarHistorialMedico(id, index) {
+            const diag = document.getElementById(`diag-${index}`).value;
+            const trat = document.getElementById(`trat-${index}`).value;
+            if (!diag || !trat) return;
+
+            const reportes = wcGetReports();
+            const r = reportes.find(item => item.id === id);
+            if (r) {
+                r.historialMedico.push({ fecha: new Date().toISOString().split('T')[0], diagnostico: diag, tratamiento: trat });
+                registrarActualizacion(r, `Historial clínico: ${diag} · ${trat}`);
+                wcSaveReports(reportes);
+                wcToast('Historial clínico actualizado en la ficha veterinaria.');
+                renderTodo();
+            }
+        }
+
+        function establecerMontoDonacion(val) {
+            montoSeleccionado = val;
+            document.getElementById('monto-libre').value = '';
+        }
+
+        function ejecutarDonacion() {
+            let monto = montoSeleccionado;
+            const libre = document.getElementById('monto-libre').value;
+            if (libre) monto = parseFloat(libre);
+
+            if (!monto || monto <= 0) {
+                wcToast('Por favor introduce o selecciona un monto válido.', 'error');
+                return;
+            }
+
+            const txId = 'TX_' + Math.floor(10000 + Math.random() * 90000);
+            const fecha = new Date().toLocaleString();
+
+            const donaciones = wcGetDonations();
+            donaciones.unshift({ id: txId, monto: monto, fecha: new Date().toISOString(), donante: 'Usuario Web' });
+            wcSet(WC_KEYS.DONATIONS, donaciones);
+
+            document.getElementById('t-id').innerText = txId;
+            document.getElementById('t-fecha').innerText = fecha;
+            document.getElementById('t-monto').innerText = monto;
+            document.getElementById('ticket-donacion').classList.remove('d-none');
+            wcToast('¡Donación recibida! Transacción autorizada por la pasarela.');
+        }
+
+        function mostrarSeccionPublicarBlog() {
+            const box = document.getElementById('box-crear-blog');
+            box.classList.toggle('d-none');
+            box.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function guardarPublicacionBlog(e) {
+            e.preventDefault();
+            const tit = document.getElementById('blog-titulo').value;
+            const cont = document.getElementById('blog-contenido').value;
+            const fotoFile = document.getElementById('blog-foto').files[0];
+
+            wcFileToBase64(fotoFile, function (img64) {
+                const blogs = wcGetBlog();
+                blogs.unshift({
+                    id: wcUid('art'),
+                    titulo: tit,
+                    contenido: cont,
+                    foto: img64,
+                    aprobado: false, // Requiere revisión de administrador
+                    fecha: new Date().toISOString().split('T')[0]
+                });
+                wcSet(WC_KEYS.BLOG, blogs);
+                wcToast('Publicación enviada. Aparecerá en el blog una vez aprobada por el Administrador.');
+                document.getElementById('blog-titulo').value = '';
+                document.getElementById('blog-contenido').value = '';
+                document.getElementById('box-crear-blog').classList.add('d-none');
+                renderTodo();
+            });
+        }
+
+        function aprobarArticuloBlog(id) {
+            const blogs = wcGetBlog();
+            const b = blogs.find(item => item.id === id);
+            if (b) {
+                b.aprobado = true;
+                wcSet(WC_KEYS.BLOG, blogs);
+                wcToast('Artículo aprobado y publicado en el blog.');
+                renderTodo();
+            }
+        }
+
+        function eliminarArticuloBlog(id) {
+            let blogs = wcGetBlog();
+            blogs = blogs.filter(item => item.id !== id);
+            wcSet(WC_KEYS.BLOG, blogs);
+            wcToast('Publicación inapropiada eliminada por el administrador.');
+            renderTodo();
+        }
+
+        function abrirModalAdopcion(id) {
+            document.getElementById('adop-animal-id').value = id;
+            const myModal = new bootstrap.Modal(document.getElementById('modalAdopcion'));
+            myModal.show();
+        }
+
+        function guardarFormularioAdopcion(e) {
+            e.preventDefault();
+            const animalId = document.getElementById('adop-animal-id').value;
+            const nombre = document.getElementById('adop-nombre').value.trim();
+            const tel = document.getElementById('adop-tel').value.trim();
+            const espacio = document.getElementById('adop-espacio').value;
+
+            if (!nombre) {
+                wcToast('Ingresa el nombre del postulante para continuar.', 'error');
+                return;
+            }
+
+            if (!tel) {
+                wcToast('Ingresa un teléfono de contacto para enviar la solicitud.', 'error');
+                return;
+            }
+
+            if (!/^[0-9+\-\s]{7,15}$/.test(tel)) {
+                wcToast('El teléfono no tiene un formato válido.', 'error');
+                return;
+            }
+
+            if (!espacio) {
+                wcToast('Selecciona si cuenta con espacio adecuado para la adopción.', 'error');
+                return;
+            }
+
+            const adoc = wcGetAdoptions();
+            adoc.unshift({ id: wcUid('adop'), animalId: animalId, nombre: nombre, telefono: tel, espacio: espacio, fecha: new Date().toISOString() });
+            wcSet(WC_KEYS.ADOPTIONS, adoc);
+
+            wcToast('Formulario de adopción validado y enviado con éxito al refugio correspondiente.');
+            document.getElementById('modalAdopcion').querySelector('form').reset();
+            bootstrap.Modal.getInstance(document.getElementById('modalAdopcion')).hide();
+        }
+
+        function agregarJornada(e) {
+            e.preventDefault();
+            const tit = document.getElementById('jor-titulo').value;
+            const lug = document.getElementById('jor-lugar').value;
+            const des = document.getElementById('jor-desc').value;
+
+            const jornadas = wcGetJornadas();
+            jornadas.unshift({ id: wcUid('jor'), titulo: tit, lugar: lug, descripcion: des, fecha: new Date().toISOString().split('T')[0] });
+            wcSet(WC_KEYS.JORNADAS, jornadas);
+
+            wcToast('Nueva jornada de adopción guardada y publicada.');
+            renderTodo();
+        }
+
+        function enviarSolicitudContacto(e) {
+            e.preventDefault();
+            const email = document.getElementById('sol-email').value.trim();
+            const motivo = document.getElementById('sol-motivo').value.trim();
+            const selectEspecialista = document.getElementById('sol-esp');
+            const especialista = selectEspecialista.options[selectEspecialista.selectedIndex]?.text || 'especialista';
+
+            if (!email || !motivo) {
+                wcToast('Completa todos los campos para enviar la solicitud.', 'error');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                wcToast('Ingresa un correo electrónico válido para enviar la solicitud.', 'error');
+                return;
+            }
+
+            const solicitudes = wcGetContactRequests();
+            solicitudes.unshift({
+                id: wcUid('contact'),
+                especialista: especialista,
+                email: email,
+                motivo: motivo,
+                fecha: new Date().toISOString()
+            });
+            wcSet(WC_KEYS.CONTACT_REQUESTS, solicitudes);
+
+            wcToast(`Solicitud de contacto enviada con éxito a ${especialista}.`);
+            document.getElementById('sol-email').value = '';
+            document.getElementById('sol-motivo').value = '';
+        }
+
+        function procesarRegistroVoluntario(e) {
+            e.preventDefault();
+            const nom = document.getElementById('reg-nombre').value.trim();
+            const correo = document.getElementById('reg-correo').value.trim();
+            const ref = document.getElementById('reg-refugio').value;
+
+            if (!nom || !correo) {
+                wcToast('Completa nombre y correo para enviar tu solicitud.', 'error');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                wcToast('Ingresa un correo electrónico válido.', 'error');
+                return;
+            }
+
+            const solicitudes = wcGetVolunteerRequests();
+            solicitudes.unshift({
+                id: wcUid('vol'),
+                nombre: nom,
+                correo: correo,
+                refugio: ref,
+                estado: 'pendiente',
+                fecha: new Date().toISOString()
+            });
+            wcSet(WC_KEYS.VOLUNTEER_REQUESTS, solicitudes);
+
+            wcToast(`¡Solicitud de voluntariado enviada! Revisa el panel del refugio para su confirmación.`);
+            document.getElementById('reg-nombre').value = '';
+            document.getElementById('reg-correo').value = '';
+            renderTodo();
+        }
+
+        function actualizarSolicitudAdopcion(id, decision) {
+            const solicitudes = wcGetAdoptions();
+            const item = solicitudes.find(s => s.id === id);
+            if (!item) return;
+            item.estado = decision;
+            item.respuesta = decision === 'aceptada' ? 'Aceptada por el refugio' : 'Rechazada por el refugio';
+            item.fechaDecision = new Date().toISOString();
+            wcSet(WC_KEYS.ADOPTIONS, solicitudes);
+            const mensaje = decision === 'aceptada' ? 'Tu solicitud de adopción fue aceptada.' : 'Tu solicitud de adopción fue rechazada.';
+            const notifs = wcGetNotifications();
+            notifs.unshift({ id: wcUid('not'), mensaje: `${mensaje} Contacta al refugio para más información.`, fecha: new Date().toISOString(), ubicacion: 'Refugio WildCare' });
+            wcSet(WC_KEYS.NOTIFICATIONS, notifs);
+            wcToast(`Solicitud ${decision === 'aceptada' ? 'aceptada' : 'rechazada'} correctamente.`);
+            renderTodo();
+        }
+
+        function actualizarSolicitudVoluntariado(id, decision) {
+            const solicitudes = wcGetVolunteerRequests();
+            const item = solicitudes.find(s => s.id === id);
+            if (!item) return;
+            item.estado = decision;
+            item.respuesta = decision === 'aceptada' ? 'Aceptada por el refugio' : 'Rechazada por el refugio';
+            item.fechaDecision = new Date().toISOString();
+            wcSaveVolunteerRequests(solicitudes);
+            const mensaje = decision === 'aceptada' ? 'Tu solicitud de voluntariado fue aceptada.' : 'Tu solicitud de voluntariado fue rechazada.';
+            const notifs = wcGetNotifications();
+            notifs.unshift({ id: wcUid('not'), mensaje: `${mensaje} Revisa el estado en tu perfil.`, fecha: new Date().toISOString(), ubicacion: 'Refugio WildCare' });
+            wcSet(WC_KEYS.NOTIFICATIONS, notifs);
+            wcToast(`Solicitud de voluntariado ${decision === 'aceptada' ? 'aceptada' : 'rechazada'} correctamente.`);
+            renderTodo();
+        }
+
+        function guardarRequisitoAdopcion(index, valor) {
+            const requisitos = wcGetAdoptionRequirements();
+            requisitos[index] = valor;
+            wcSaveAdoptionRequirements(requisitos);
+            wcToast('Requisito actualizado.');
+            renderTodo();
+        }
+
+        function agregarRequisitoAdopcion() {
+            const requisitos = wcGetAdoptionRequirements();
+            requisitos.push('Nuevo requisito');
+            wcSaveAdoptionRequirements(requisitos);
+            renderTodo();
+        }
+
+        function bloquearEntidad(id) {
+            const entidades = wcGetEntities();
+            const entidad = entidades.find(e => e.id === id);
+            if (entidad) {
+                entidad.estado = entidad.estado === 'bloqueado' ? 'activo' : 'bloqueado';
+                wcSaveEntities(entidades);
+                wcToast(`Entidad ${entidad.estado === 'bloqueado' ? 'bloqueada' : 'reactivada'}.`);
+                renderTodo();
+            }
+        }
+
+        function eliminarEntidad(id) {
+            const entidades = wcGetEntities().filter(e => e.id !== id);
+            wcSaveEntities(entidades);
+            wcToast('Entidad eliminada.');
+            renderTodo();
+        }
+
+        function consultarWildIA() {
+            const val = document.getElementById('ia-input').value;
+            if (!val) return;
+            wcToast("Wild IA responde: Mantén la calma, asegura el perímetro y utiliza la sección 'Reportar Animal' si corre riesgo.");
+            document.getElementById('ia-input').value = '';
+        }
+
+        function renderTodo() {
+            const reportes = wcGetReports();
+            const filtroEspecie = document.getElementById('filtro-especie').value.toLowerCase();
+            const filtroUbi = document.getElementById('filtro-ubicacion').value.toLowerCase();
+
+            // 1. Render Casos Activos de la Comunidad
+            const contHome = document.getElementById('home-reportes');
+            contHome.innerHTML = reportes.map(r => `
+                <div class="col-md-4">
+                    <div class="card-white h-100">
+                        <img src="${r.foto}" style="height:140px; width:100%; object-fit:cover;" class="rounded-3 mb-2">
+                        <div class="d-flex justify-content-between mb-1">${wcEstadoBadge(r.estado)} <span class="badge bg-secondary">${r.clasificacion}</span></div>
+                        <h6 class="fw-bold mb-1 text-cafe">${r.tipoAnimal}</h6>
+                        <p class="small text-muted mb-1">${r.descripcion}</p>
+                        <p class="small fw-bold text-cafe-suave mb-0"><i class="bi bi-geo-alt"></i> ${r.ubicacion}</p>
+                        <div class="small text-muted mt-2"><i class="bi bi-clock-history"></i> Últ. cambio: ${formatearFechaHora(r.actualizaciones?.[0]?.fecha) || 'Sin registro'}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // 2. Render Panel Rescatista (Mapa y Acciones)
+            const contRescatista = document.getElementById('rescatista-cards-container');
+            if (contRescatista) {
+                contRescatista.innerHTML = reportes.map((r, i) => `
+                    <div class="col-md-6 border-bottom pb-2">
+                        <div class="small fw-bold text-dark">[${r.id}] ${r.tipoAnimal} en ${r.ubicacion}</div>
+                        <div class="my-1">
+                            <a href="${r.coordenadas}" target="_blank" class="btn btn-xs btn-outline-primary py-0 px-2 rounded small"><i class="bi bi-map"></i> Abrir en GPS</a>
+                            <button class="btn btn-xs btn-warning py-0 px-2 rounded small" onclick="aceptarCasoRescatista('${r.id}')">Aceptar Rescate</button>
+                        </div>
+                        <div class="small text-muted mt-2"><i class="bi bi-clock-history"></i> Últ. cambio: ${formatearFechaHora(r.actualizaciones?.[0]?.fecha)}</div>
+                        <div class="row g-1 mt-1">
+                            <div class="col-6">
+                                <select class="form-select form-select-sm" onchange="cambiarClasificacionRescatista('${r.id}', this.value)">
+                                    <option>Clasificar...</option>
+                                    <option value="Doméstico" ${r.clasificacion === 'Doméstico' ? 'selected' : ''}>Doméstico</option>
+                                    <option value="Silvestre" ${r.clasificacion === 'Silvestre' ? 'selected' : ''}>Silvestre</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <select id="est-${i}" class="form-select form-select-sm">
+                                    <option value="en-camino" ${r.estado === 'en-camino' ? 'selected' : ''}>En Camino</option>
+                                    <option value="rescatado" ${r.estado === 'rescatado' ? 'selected' : ''}>Rescatado</option>
+                                    <option value="en-refugio" ${r.estado === 'en-refugio' ? 'selected' : ''}>En Refugio</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mt-1 d-flex gap-1">
+                                <input type="text" id="obs-${i}" class="form-control form-control-sm" placeholder="Comentarios/Avances del estado">
+                                <button class="btn btn-sm btn-dark" type="button" onclick="registrarComentarioYEstado('${r.id}', ${i})">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 3. Render Panel Clínico del Refugio
+            const contRefugio = document.getElementById('refugio-list-medica');
+            if (contRefugio) {
+                contRefugio.innerHTML = reportes.map((r, i) => `
+                    <div class="col-12 border p-2 rounded bg-white small mb-1">
+                        <strong>[Ficha ${r.id}] ${r.tipoAnimal}</strong> - Estado actual: ${r.estado}
+                        <div class="text-muted small">Historial Clínico: ${r.historialMedico.map(h => `[${h.fecha}] ${h.diagnostico}: ${h.tratamiento}`).join(' | ') || 'Sin registros médicos'}</div>
+                        <div class="text-muted small mt-1"><i class="bi bi-clock-history"></i> Últ. cambio: ${formatearFechaHora(r.actualizaciones?.[0]?.fecha)} · ${r.actualizaciones?.[0]?.detalle || 'Sin detalle'}</div>
+                        <div class="d-flex gap-1 mt-1">
+                            <input type="text" id="diag-${i}" class="form-control form-control-sm" placeholder="Diagnóstico">
+                            <input type="text" id="trat-${i}" class="form-control form-control-sm" placeholder="Tratamiento">
+                            <button class="btn btn-xs btn-danger" onclick="agregarHistorialMedico('${r.id}', ${i})">+</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const contSolicitudesAdopcion = document.getElementById('refugio-solicitudes-adopcion');
+            const contSolicitudesVoluntariado = document.getElementById('refugio-solicitudes-voluntariado');
+            const solicitudesAdopcion = wcGetAdoptions();
+            const solicitudesVoluntariado = wcGetVolunteerRequests();
+
+            if (contSolicitudesAdopcion) {
+                contSolicitudesAdopcion.innerHTML = solicitudesAdopcion.length
+                    ? solicitudesAdopcion.map(s => `
+                        <div class="border rounded p-2 mb-2 bg-white">
+                            <div class="fw-bold">${s.nombre}</div>
+                            <div class="text-muted small">Tel: ${s.telefono} · Animal: ${s.animalId || 'Sin ID'}</div>
+                            <div class="text-muted small">Fecha: ${s.fecha?.slice(0, 10) || '-'}</div>
+                            <div class="text-muted small">Estado: ${s.estado || 'pendiente'}</div>
+                            <div class="d-flex gap-1 mt-2">
+                                <button class="btn btn-xs btn-success py-0 px-2 rounded" onclick="actualizarSolicitudAdopcion('${s.id}', 'aceptada')">Aceptar</button>
+                                <button class="btn btn-xs btn-danger py-0 px-2 rounded" onclick="actualizarSolicitudAdopcion('${s.id}', 'rechazada')">Rechazar</button>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<div class="text-muted">No hay solicitudes de adopción pendientes.</div>';
+            }
+
+            if (contSolicitudesVoluntariado) {
+                contSolicitudesVoluntariado.innerHTML = solicitudesVoluntariado.length
+                    ? solicitudesVoluntariado.map(s => `
+                        <div class="border rounded p-2 mb-2 bg-white">
+                            <div class="fw-bold">${s.nombre}</div>
+                            <div class="text-muted small">Correo: ${s.correo}</div>
+                            <div class="text-muted small">Refugio: ${s.refugio}</div>
+                            <div class="text-muted small">Estado: ${s.estado || 'pendiente'}</div>
+                            <div class="d-flex gap-1 mt-2">
+                                <button class="btn btn-xs btn-success py-0 px-2 rounded" onclick="actualizarSolicitudVoluntariado('${s.id}', 'aceptada')">Aceptar</button>
+                                <button class="btn btn-xs btn-danger py-0 px-2 rounded" onclick="actualizarSolicitudVoluntariado('${s.id}', 'rechazada')">Rechazar</button>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<div class="text-muted">No hay solicitudes de voluntariado pendientes.</div>';
+            }
+
+            // 4. Render Adopciones y Jornadas
+            const contJor = document.getElementById('jornadas-container');
+            contJor.innerHTML = wcGetJornadas().map(j => `
+                <div class="p-3 bg-light rounded-3 border-start border-4 border-success small">
+                    <h6 class="fw-bold mb-1 text-success">${j.titulo}</h6>
+                    <div><i class="bi bi-geo-alt-fill"></i> <strong>Lugar:</strong> ${j.lugar} | <i class="bi bi-calendar-event"></i> ${j.fecha}</div>
+                    <p class="mb-0 mt-1 text-muted">${j.descripcion}</p>
+                </div>
+            `).join('');
+
+            const contAdop = document.getElementById('adopciones-container');
+            const animalesDisponibles = reportes.filter(r => {
+                const estado = (r.estado || '').toLowerCase();
+                return estado === 'en-refugio' || estado === 'en-adopcion' || estado === 'rescatado';
+            });
+
+            // Aplicar filtros inmediatos
+            const animalesFiltrados = animalesDisponibles.filter(a => {
+                const tipo = (a.tipoAnimal || '').toLowerCase();
+                const ubicacion = (a.ubicacion || '').toLowerCase();
+                return tipo.includes(filtroEspecie) && ubicacion.includes(filtroUbi);
+            });
+
+            if (animalesFiltrados.length === 0) {
+                contAdop.innerHTML = `<p class="small text-muted text-center">No hay animales disponibles con los filtros indicados.</p>`;
+            } else {
+                contAdop.innerHTML = animalesFiltrados.map(a => `
+                    <div class="col-6">
+                        <div class="p-2 border rounded-3 bg-white text-center">
+                            <img src="${a.foto}" style="height:70px; width:70px; object-fit:cover;" class="rounded-circle mb-1">
+                            <div class="fw-bold small text-dark">${a.tipoAnimal}</div>
+                            <div class="text-muted style-xs" style="font-size:11px;"><i class="bi bi-geo-alt"></i> ${a.ubicacion}</div>
+                            <button class="btn btn-xs btn-success py-0 px-2 rounded mt-1 small" style="font-size:12px;" onclick="abrirModalAdopcion('${a.id}')">Adoptar</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const contRequisitos = document.getElementById('refugio-requisitos-adopcion');
+            if (contRequisitos) {
+                const requisitos = wcGetAdoptionRequirements();
+                contRequisitos.innerHTML = `
+                    <div class="d-flex flex-column gap-2">
+                        ${requisitos.map((req, index) => `
+                            <input type="text" class="form-control form-control-sm" value="${req}" onchange="guardarRequisitoAdopcion(${index}, this.value)">
+                        `).join('')}
+                        <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="agregarRequisitoAdopcion()">Agregar requisito</button>
+                    </div>
+                `;
+            }
+
+            const contDonaciones = document.getElementById('refugio-registro-donaciones');
+            if (contDonaciones) {
+                const donaciones = wcGetDonations();
+                contDonaciones.innerHTML = donaciones.length
+                    ? donaciones.map(d => `
+                        <div class="border rounded p-2 mb-2 bg-white">
+                            <div class="fw-bold">$${d.monto} USD</div>
+                            <div class="text-muted small">Donante: ${d.donante}</div>
+                            <div class="text-muted small">Fecha: ${d.fecha?.slice(0, 10) || '-'}</div>
+                        </div>
+                    `).join('')
+                    : '<div class="text-muted">No hay donaciones registradas.</div>';
+            }
+
+            const contEntidades = document.getElementById('admin-entidades-list');
+            if (contEntidades) {
+                const entidades = wcGetEntities();
+                contEntidades.innerHTML = entidades.length
+                    ? entidades.map(e => `
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <span>${e.nombre} <small class="text-muted">(${e.tipo})</small></span>
+                            <div>
+                                <button class="btn btn-xs btn-warning py-0 px-2 rounded" onclick="bloquearEntidad('${e.id}')">${e.estado === 'bloqueado' ? 'Desbloquear' : 'Bloquear'}</button>
+                                <button class="btn btn-xs btn-danger py-0 px-2 rounded" onclick="eliminarEntidad('${e.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<div class="text-muted">No hay entidades registradas.</div>';
+            }
+
+            // 5. Render Blog aprobado e Historial de Rescates
+            const contBlog = document.getElementById('blog-cards-container');
+            const blogs = wcGetBlog();
+            contBlog.innerHTML = blogs.filter(b => b.aprobado).map(b => `
+                <div class="col-md-6">
+                    <div class="card-white h-100 p-3">
+                        <div class="d-flex gap-3 align-items-center">
+                            <img src="${b.foto}" style="width:90px; height:90px; object-fit:cover;" class="rounded-3">
+                            <div>
+                                <span class="badge bg-light text-dark small mb-1">${b.fecha}</span>
+                                <h6 class="fw-bold text-cafe mb-1">${b.titulo}</h6>
+                                <p class="small text-muted mb-0">${b.contenido}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // 6. Render Panel Administrador (Moderación)
+            const contAdminBlog = document.getElementById('admin-blog-pendientes');
+            if (contAdminBlog) {
+                const pendientes = blogs.filter(b => !b.aprobado);
+                if (pendientes.length === 0) {
+                    contAdminBlog.innerHTML = `<p class="text-muted mb-0">No hay contenido pendiente de moderación.</p>`;
+                } else {
+                    contAdminBlog.innerHTML = pendientes.map(b => `
+                        <div class="p-2 bg-light rounded d-flex justify-content-between align-items-center mb-1">
+                            <span><strong>${b.titulo}</strong> (${b.fecha})</span>
+                            <div>
+                                <button class="btn btn-xs btn-success py-0 px-2 rounded" onclick="aprobarArticuloBlog('${b.id}')">Aprobar</button>
+                                <button class="btn btn-xs btn-danger py-0 px-2 rounded" onclick="eliminarArticuloBlog('${b.id}')">Eliminar</button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 7. Notificaciones e Historial
+            const notifs = wcGetNotifications();
+            document.getElementById('count-notif').innerText = notifs.length;
+            document.getElementById('list-notif-box').innerHTML = notifs.map(n => `
+                <div class="mb-1 border-bottom pb-1">
+                    <i class="bi bi-clock-history"></i> [${n.fecha.substring(11, 16)}] ${n.mensaje}
+                </div>
+            `).join('');
+        }
+
+        function filtrarTodoElSistema() {
+            const query = document.getElementById('global-search').value.toLowerCase();
+            document.getElementById('filtro-especie').value = query;
+            renderTodo();
+        }
+
+        // Carga inicial y mapeo de especialistas
+        document.addEventListener('DOMContentLoaded', () => {
+            cambiarRolSimulado('admin'); // Inicializa la vista completa por defecto para testing eficiente
+
+            const especialistas = wcGetSpecialists();
+            const selectEsp = document.getElementById('sol-esp');
+            if (selectEsp) {
+                selectEsp.innerHTML = especialistas.map(e => `<option value="${e.id}">${e.nombre} - ${e.especialidad}</option>`).join('');
+            }
+            const contEsp = document.getElementById('specialists-container');
+            if (contEsp) {
+                contEsp.innerHTML = especialistas.map(e => `
+                    <div class="p-2 border rounded-3 bg-light mb-1 small">
+                        <strong>${e.nombre}</strong> <span class="text-muted">(${e.especialidad})</span><br>
+                        <i class="bi bi-envelope-at"></i> ${e.contacto} | <i class="bi bi-telephone"></i> ${e.telefono}
+                    </div>
+                `).join('');
+            }
+        });
+    </script>
+</body>
+
+</html>
