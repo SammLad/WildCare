@@ -5,15 +5,15 @@ const REPORTS_KEY = 'anima_reports';
 export const VALID_ROLES = ['admin', 'usuario', 'rescatista', 'refugio'];
 
 export const DEMO_ADMIN = {
-  email: 'admin@animanova.com',
+  email: 'admin@wildcare.com',
   password: 'Admin2026!',
 };
 
 export const DEMO_ACCOUNTS = [
   DEMO_ADMIN,
-  { email: 'usuario@animanova.com', password: 'Usuario2026!', nombre: 'Ana García', rol: 'usuario' },
-  { email: 'rescatista@animanova.com', password: 'Rescate2026!', nombre: 'Equipo Rescate', rol: 'rescatista' },
-  { email: 'refugio@animanova.com', password: 'Refugio2026!', nombre: 'Refugio Esperanza', rol: 'refugio' },
+  { email: 'usuario@wildcare.com', password: 'Usuario2026!', nombre: 'Ana García', rol: 'usuario' },
+  { email: 'rescatista@wildcare.com', password: 'Rescate2026!', nombre: 'Equipo Rescate', rol: 'rescatista' },
+  { email: 'refugio@wildcare.com', password: 'Refugio2026!', nombre: 'Refugio Esperanza', rol: 'refugio' },
 ];
 
 export const ROLE_LABELS = {
@@ -59,7 +59,7 @@ function ensureDemoData() {
     if (!users.some((user) => user.email === account.email)) {
       users.push({
         id: `demo-${index}`,
-        nombre: account.nombre || 'Administrador Anima Nova',
+        nombre: account.nombre || 'Administrador Wild Care',
         email: account.email,
         password: account.password,
         rol: account.rol || 'admin',

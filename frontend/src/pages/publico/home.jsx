@@ -376,7 +376,7 @@ export default function Home() {
             <span className="eyebrow">Estamos para ayudarte</span>
             <h2>Conversemos</h2>
             <p>¿Tienes dudas, quieres apoyar la red o compartir información útil para la comunidad?</p>
-            <a href="mailto:hola@animanova.org">hola@animanova.org</a>
+            <a href="mailto:hola@wildcare.org">hola@wildcare.org</a>
           </div>
 
           <form className="contact-form" onSubmit={submitContact}>
@@ -404,14 +404,14 @@ export default function Home() {
       <footer className="site-footer">
         <Link className="brand brand--footer" to="/">
           <img className="brand__mark" src={deerIcon} alt="" />
-          <span>Anima Nova</span>
+          <span>Wild Care</span>
         </Link>
         <p>Protegemos la fauna y acompañamos la recuperación de cada especie.</p>
         <div>
           <Link to="/login">Ingresar</Link>
           <Link to="/crear-cuenta">Crear cuenta</Link>
         </div>
-        <small>© 2026 Anima Nova · Plataforma demostrativa</small>
+        <small>&copy; 2026 Wild Care · Plataforma demostrativa</small>
       </footer>
     </div>
   );

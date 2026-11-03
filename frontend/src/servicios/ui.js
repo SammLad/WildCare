@@ -1,5 +1,5 @@
 ﻿/* ===========================================================
-   AnimaNova — ui.js (Capa de Renderizado de Historias de Usuario)
+   Wild Care — ui.js (Capa de Renderizado de Historias de Usuario)
 =========================================================== */
 
 function wcToast(message, tipo = 'success') {

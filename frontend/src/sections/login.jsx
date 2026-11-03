@@ -27,7 +27,7 @@ export default function Login() {
       <section className="auth-card" aria-labelledby="login-title">
         <Link className="auth-brand" to="/">
           <img className="brand__mark" src={deerIcon} alt="" />
-          <span>Anima Nova</span>
+          <span>Wild Care</span>
         </Link>
         <p className="auth-eyebrow">Tu comunidad de cuidado animal</p>
         <h1 id="login-title">Iniciar sesión</h1>

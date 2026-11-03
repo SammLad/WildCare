@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { getReports, getSession, getUsers, ROLE_LABELS, normalizeRole, rolePath, saveReports, signOut } from '../../servicios/auth';
 import '../../assets/styles/dashboard.css';
+import deerIcon from '../../assets/icowhite.png';
 
 const PORTALS = {
   admin: {
@@ -102,9 +103,9 @@ export default function AdminDashboard() {
   return (
     <div className="dashboard-shell">
       <aside className="dashboard-sidebar">
-        <Link className="dashboard-brand" to="/">
-          <span>🐾</span>
-          <strong>Anima Nova</strong>
+        <Link className="brand brand--footer" to="/">
+          <img className="brand__mark" src={deerIcon} alt="" />
+          <span>Wild Care</span>
         </Link>
         <div className="sidebar-label">Espacio de trabajo</div>
         <nav className="dashboard-nav" aria-label="Secciones del panel">

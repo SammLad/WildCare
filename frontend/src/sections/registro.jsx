@@ -45,7 +45,7 @@ export default function Register() {
       <section className="auth-card" aria-labelledby="register-title">
         <Link className="auth-brand" to="/">
           <span>🐾</span>
-          <span>Anima Nova</span>
+          <span>Wild Care</span>
         </Link>
         <p className="auth-eyebrow">Únete a la comunidad</p>
         <h1 id="register-title">Crear cuenta</h1>
