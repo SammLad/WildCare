@@ -24,6 +24,9 @@ export default function Login() {
 
   return (
     <main className="auth-page">
+      <div className="auth-decor auth-decor-left" aria-hidden="true" />
+      <div className="auth-decor auth-decor-right" aria-hidden="true" />
+
       <section className="auth-card" aria-labelledby="login-title">
         <Link className="auth-brand" to="/">
           <img className="brand__mark" src={deerIcon} alt="" />

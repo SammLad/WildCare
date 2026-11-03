@@ -1,6 +1,9 @@
 ﻿import React from "react";
 import { BrowserRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
 import Home from './pages/publico/home';
+import GuidePage from './pages/publico/guia';
+import DonationPage from './pages/publico/donacion';
+import ContactPage from './pages/publico/contacto';
 import AdminDashboard from './pages/admin/inicio';
 import Login from './sections/login';
 import Register from './sections/registro';
@@ -30,6 +33,9 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/guia" element={<GuidePage />} />
+        <Route path="/donacion" element={<DonationPage />} />
+        <Route path="/contacto" element={<ContactPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/crear-cuenta" element={<Register />} />
         <Route path="/panel/:role" element={<RolePortal />} />

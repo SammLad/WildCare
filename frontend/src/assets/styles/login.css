@@ -1,21 +1,55 @@
 .auth-page {
+  position: relative;
   display: grid;
   min-height: 100vh;
   place-items: center;
   padding: 32px 16px;
+  overflow: hidden;
   background:
-    radial-gradient(circle at 12% 10%, rgba(232, 209, 195, .65), transparent 31%),
-    radial-gradient(circle at 88% 90%, rgba(246, 232, 235, .8), transparent 32%),
-    var(--color-sand-100);
+    radial-gradient(circle at 12% 10%, rgba(232, 209, 195, .75), transparent 32%),
+    radial-gradient(circle at 86% 88%, rgba(242, 214, 188, .8), transparent 28%),
+    linear-gradient(135deg, #f9f4ee 0%, #f4e9df 100%);
+}
+
+.auth-decor {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(10px);
+  opacity: 0.7;
+}
+
+.auth-decor-left {
+  left: 8%;
+  bottom: 10%;
+  width: 200px;
+  height: 200px;
+  background: rgba(214, 150, 115, 0.18);
+}
+
+.auth-decor-right {
+  right: 8%;
+  top: 15%;
+  width: 260px;
+  height: 260px;
+  background: rgba(182, 106, 78, 0.14);
 }
 
 .auth-card {
-  width: min(100%, 465px);
-  padding: 37px 40px;
-  border: 1px solid var(--color-line);
-  border-radius: 22px;
-  background: var(--color-paper);
-  box-shadow: 0 20px 60px rgba(73, 58, 50, .1);
+  position: relative;
+  z-index: 1;
+  width: min(100%, 500px);
+  padding: 28px 30px 24px;
+  border: 1px solid rgba(113, 84, 67, 0.09);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(249, 240, 232, 0.92));
+  box-shadow: 0 30px 60px rgba(73, 58, 50, 0.12);
+}
+
+.auth-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .auth-brand {
@@ -34,8 +68,26 @@
   height: 36px;
 }
 
+.auth-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 10px;
+  border: 1px solid rgba(124, 90, 74, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #7d5849;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-intro {
+  margin-top: 22px;
+}
+
 .auth-eyebrow {
-  margin: 28px 0 7px;
+  margin: 0 0 8px;
   color: var(--color-pink-700);
   font-size: 10px;
   font-weight: 800;
@@ -47,65 +99,68 @@
   margin: 0;
   color: var(--color-earth-800);
   font-family: Manrope, sans-serif;
-  font-size: 29px;
-  letter-spacing: -.04em;
+  font-size: 31px;
+  letter-spacing: -.05em;
 }
 
 .auth-subtitle {
-  margin: 8px 0 22px;
+  margin: 10px 0 22px;
   color: var(--color-muted);
   font-size: 12px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 10px;
 }
 
 .auth-form label {
   margin-top: 5px;
   color: var(--color-earth-800);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .auth-form input {
   width: 100%;
-  min-height: 45px;
-  padding: 11px 13px;
-  border: 1px solid var(--color-sand-300);
-  border-radius: 10px;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid rgba(109, 80, 67, 0.16);
+  border-radius: 14px;
   color: var(--color-earth-900);
-  background: #fdfaf5;
-  font-size: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  box-shadow: inset 0 1px 2px rgba(100, 75, 57, 0.04);
 }
 
 .auth-form input::placeholder {
-  color: #a4988b;
+  color: rgba(113, 88, 78, 0.58);
 }
 
 .auth-form input:focus {
-  border-color: #bd8c95;
-  box-shadow: 0 0 0 3px rgba(189, 140, 149, .14);
+  border-color: rgba(184, 98, 70, 0.5);
+  box-shadow: 0 0 0 4px rgba(184, 98, 70, 0.12);
   outline: 0;
 }
 
 .auth-submit {
   width: 100%;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .demo-credentials {
   display: grid;
-  gap: 5px;
-  margin-top: 19px;
-  padding: 13px 14px;
-  border: 1px dashed #d8c6b5;
-  border-radius: 11px;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 14px 15px;
+  border: 1px dashed rgba(120, 90, 69, 0.24);
+  border-radius: 14px;
   color: var(--color-earth-700);
-  background: #f8f1e8;
+  background: linear-gradient(135deg, #f8efe5, #f4e9de);
   font-size: 10px;
 }
 
@@ -116,7 +171,7 @@
 }
 
 .auth-switch {
-  margin: 21px 0 12px;
+  margin: 20px 0 12px;
   color: var(--color-muted);
   font-size: 11px;
   text-align: center;
@@ -149,6 +204,11 @@
 
 @media (max-width: 480px) {
   .auth-card {
-    padding: 30px 24px;
+    padding: 26px 22px 20px;
+  }
+
+  .auth-card__header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
